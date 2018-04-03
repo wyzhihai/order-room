@@ -11,8 +11,8 @@ export default {
 </script>
 
 <style>
-#app {
-  
+html,body,#app{
+	height:100%;
 }
 *{
   font-family:"MicrosoftYaHei";
