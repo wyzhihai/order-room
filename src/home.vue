@@ -1,68 +1,46 @@
 <template>
-  <div>
-  	<div class="bg">
-  	<div class="banner">
-	  	<mt-swipe :showIndicators="false">
-	  		<mt-swipe-item><img src="/static/img/banner-1.png" alt=""></mt-swipe-item>
-	  		<mt-swipe-item><img src="/static/img/banner-2.png" alt=""></mt-swipe-item>
-	  		<mt-swipe-item><img src="/static/img/banner-3.png" alt=""></mt-swipe-item>
-	  		<mt-swipe-item><img src="/static/img/banner-4.png" alt=""></mt-swipe-item>
-	  	</mt-swipe>
-	  </div>
-	  <div class="links">
-  		<router-link to="/destination" class="link">
-  			<span class="title">目的地</span>
-  			<span class="destination">佛山</span>
-  		</router-link>
-  		<a href="#" class="link time">
-  			<span class="title">时间</span>
-			<span class="date">04月10日<br>04月26日</span>
-			<span class="week">周二入住<br>周四离店 共16晚
-			</span>
-  		</a>
-  		<router-link to="/search" class="link">
-  			<span class="title">搜索</span>
-  			<span class="place">我的附近</span>
-  			<span class="tips">酒店名/地名/关键词</span>
-  		</router-link>
-  		<a href="#" class="link">
-  			<span class="title">星级价格</span>
-  			<span class="star default">不限价格，不限星级</span>
-  		</a>
-  		<button>查找酒店</button>
-  		<div class="menu">
-  			<span class="menu-item">住过/收藏</span>
-  			<span class="menu-item">我的订单</span>
-  			<span class="menu-item">会员中心</span>
-  		</div>
-	  </div>
-	  <router-link to="/"><img class="member" src="static/img/0@2x.png" alt=""></router-link>
-  </div>
-  <div class="recommend">
-  	<h2>为你推荐</h2>
-		<router-link class="item" to="/" v-for="(item,index) in hotels" :key="index">
-			<img :src="item.img" alt="">
-			<div class="info">
-				<div>
-					<h3>{{item.name}}</h3>
-					<span class="blue">
-						<strong>{{item.score}}</strong><small>分</small>
-						<span>{{'很好'}}</span>
-					</span>
-					<span class="gray">
-						{{item.customers}}人消费<br>
-						<span>距我{{item.distance}}，{{"万达广场"}}</span>
-					</span>
-				</div>
-				<div>
-					<span class="red">￥<strong>{{item.price}}</strong>起</span>
-					<span class="right gray">{{item.lastOrder}}小时前有人预定</span>
-				</div>
-				
+	<div class="bg">
+		<div class="banner">
+			<mt-swipe :showIndicators="false">
+				<mt-swipe-item><img src="/static/img/banner-1.png" alt=""></mt-swipe-item>
+				<mt-swipe-item><img src="/static/img/banner-2.png" alt=""></mt-swipe-item>
+				<mt-swipe-item><img src="/static/img/banner-3.png" alt=""></mt-swipe-item>
+				<mt-swipe-item><img src="/static/img/banner-4.png" alt=""></mt-swipe-item>
+			</mt-swipe>
+		</div>
+		<div class="links">
+			<router-link to="/destination" class="link">
+				<span class="title">目的地</span>
+				<span class="destination">佛山</span>
+			</router-link>
+			<a href="#" class="link time">
+				<span class="title">时间</span>
+				<span class="date">04月10日<br>04月26日</span>
+				<span class="week">周二入住<br>周四离店 共16晚
+				</span>
+			</a>
+			<router-link to="/search" class="link">
+				<span class="title">搜索</span>
+				<span class="place">我的附近</span>
+				<span class="tips">酒店名/地名/关键词</span>
+			</router-link>
+			<a href="#" class="link">
+				<span class="title">星级价格</span>
+				<span class="star default">不限价格，不限星级</span>
+			</a>
+			<router-link class="btn" to="/resultList">查找酒店</router-link>
+			<div class="menu">
+				<router-link to="/bookmark" class="menu-item">住过/收藏</router-link>
+				<router-link to="/order" class="menu-item">我的订单</router-link>
+				<router-link to="/member" class="menu-item">会员中心</router-link>
 			</div>
-		</router-link>
-  	</div>
-  </div>
+		</div>
+		<router-link to="/"><img class="member" src="static/img/0@2x.png" alt=""></router-link>
+		<div class="recommend">
+			<h2>为你推荐</h2>
+			<hotel-info  v-for="(item,index) in hotels" :info="item" :key="index"></hotel-info>
+		</div>
+	</div>
 </template>
 
 <script>
@@ -79,7 +57,8 @@ export default {
       		price:188,
       		customers:1000,
       		lastOrder:30,
-      		img:'/static/img/home-1.png'
+      		img:'/static/img/home-1.png',
+      		url:'/'
       	},
       	{
       		name:"2513乐尚酒店公寓 (南海万达广场店)",
@@ -88,7 +67,8 @@ export default {
       		price:188,
       		customers:1000,
       		lastOrder:30,
-      		img:'/static/img/home-2.png'
+      		img:'/static/img/home-2.png',
+      		url:'/'
       	}
       ]
     }
@@ -97,7 +77,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="less">
 	.bg{
 		background:#f2f2f2;
 	}
@@ -160,9 +140,12 @@ export default {
 		font-size:0.373333rem;
 		color:#999;
 	}
-	.links button{
+	.links .btn{
+		display:block;
 		width:8.56rem;
 		height:1.2rem;
+		line-height:1.2rem;
+		text-align:center;
 		border:none;
 		border-radius:0.6rem;
 		background:#ea5319;
@@ -194,56 +177,16 @@ export default {
 		width:100%;
 		margin:-0.426667rem 0 0.266667rem 0;
 	}
-	.recommend h2{
-		font-size:0.48rem;
-		color:#333;
-		text-align:center;
-		padding:0.32rem 0 0.293333rem 0;
-		border-bottom:1px solid #dfdfdf;
+	.recommend{
+		background:#fff;
+		h2{
+			font-size:0.48rem;
+			color:#333;
+			text-align:center;
+			padding:0.32rem 0 0.293333rem 0;
+			border-bottom:1px solid #dfdfdf;
+		}
 	}
-	.recommend .item{
-		display:flex;
-		align-items:flex-start;
-		margin-bottom:0.133333rem;
-	}
-	.recommend img{
-		width:2.666667rem;
-		margin-right:0.266667rem;
-	}
-	.recommend .info{
-		align-self:stretch;
-		flex-grow:1;
-		display:flex;
-		flex-direction:column;
-		justify-content:space-between;
-		padding:0.266667rem 0.32rem 0.266667rem 0;
-		border-bottom:1px solid #dfdfdf;
-	}
-	.recommend .info h3{
-		font-size:0.4rem;
-		color:#010101;
-	}
-	.recommend .info .blue{
-		font-size:0.426667rem;
-		color:#49adff;
-		margin-right:0.32rem;
-	}
-	.recommend .info .blue small{
-		font-size:0.32rem;
-		margin-right:0.133333rem;
-	}
-	.recomment .info .gray{
-		font-size:0.32rem;
-		color:#999;
-	}
-	.recommend .info .red{
-		font-size:0.32rem;
-		color:#ea5319;
-	}
-	.recommend .info .red strong{
-		font-size:0.426667rem;
-	}
-	.recommend .info .right{
-		float:right;
-	}
+	
+	
 </style>

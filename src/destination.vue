@@ -1,10 +1,7 @@
 <template>
 	<div class="bg">
-		<div class="header">
-			<router-link class="back" to="/">
-				<img src="/static/img/back-2.png" alt="">
-			</router-link>
-			<h2>选择目的地</h2>
+		<div class="top">
+			<header-bar back="/" title="选择目的地"></header-bar>
 			<input type="text" placeholder="城市/酒店名">
 		</div>
 		<div class="current">
@@ -41,25 +38,10 @@
 	.bg{
 		background:#f2f2f2;
 		height:100%;
-		.header{
-			position:relative;
+		.top{
 			background:#fff;
-			padding:0 0.32rem;
-			.back{
-				position:absolute;
-				top:0.4rem;
-				img{
-					width:0.266667rem;
-				}
-			}
-			h2{
-				// font-weight:bold;
-				font-size:0.453333rem;
-				color:#010101;
-				text-align:center;
-				padding-top:0.346667rem;
-				padding-bottom:0.533333rem;
-			}
+			text-align:center;
+			line-height:1.173333rem;
 			input{
 				width:9.333333rem;
 				height:0.8rem;
@@ -91,7 +73,7 @@
 				img{
 					align-self:flex-start;
 					width:0.293333rem;
-					vertical-align:middle;
+					margin-right:0.24rem;
 				}
 				.detail{
 					flex-grow:1;
@@ -119,7 +101,7 @@
 			line-height:0.933333rem;
 			text-align:center;
 			border:1px solid #999;
-			border-radius:4px;
+			border-radius:0.106667rem;
 			font-size:0.4rem;
 			color:#000;
 		}

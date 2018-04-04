@@ -18,8 +18,8 @@ html,body,#app{
   font-family:"MicrosoftYaHei";
   box-sizing:border-box;
 }
-a,a:focus{
+a{
   color:#666;
-  text-decoration:none;
+  text-decoration:none !important;
 }
 </style>

@@ -7,8 +7,14 @@ import 'mint-ui/lib/style.css'
 import {Swipe,SwipeItem} from 'mint-ui';
 Vue.component(Swipe.name,Swipe);
 Vue.component(SwipeItem.name,SwipeItem);
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
+import headerBar from "@/components/headerBar";
+import hotelInfo from "@/components/hotelInfo";
+import hotelInfoSimple from "@/components/hotelInfoSimple";
+Vue.component('header-bar',headerBar);
+Vue.component('hotel-info',hotelInfo);
+Vue.component('hotel-info-simple',hotelInfoSimple);
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
