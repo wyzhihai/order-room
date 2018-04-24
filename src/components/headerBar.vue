@@ -14,7 +14,10 @@
 		background:#fff;
 		text-align:center;
 		line-height:1.173333rem;
-		position:relative;
+		position:fixed;
+		width:100%;
+		z-index:3;
+		top:0;
 		.back{
 			position:absolute;
 			line-height:normal;

@@ -1,0 +1,41 @@
+{
+	"hotels":[
+		{
+			"name":"锐思堡国际公寓 (南海万达广场店)",
+			"score":5.0,
+			"distance":100,
+			"price":188,
+			"customers":1000,
+			"lastOrder":30,
+			"img":"/static/img/home-1.png",
+			"url":"/"
+		},
+		{
+			"name":"2513乐尚酒店公寓 (南海万达广场店)",
+			"score":5.0,
+			"distance":100,
+			"price":188,
+			"customers":1000,
+			"lastOrder":30,
+			"img":"/static/img/home-2.png",
+			"url":"/"
+		}
+	],
+	"rooms":[{
+		"name":"商务大床房",
+		"area":22,
+		"bed":"单人床1.5m",
+		"window":true,
+		"originalPrice":188,
+		"vipPrice":168,
+		"img":"/static/img/roomlist/ruisibao1.png"
+	},{
+		"name":"商务大床房",
+		"area":22,
+		"bed":"单人床1.5m",
+		"window":true,
+		"originalPrice":188,
+		"vipPrice":168,
+		"img":"/static/img/roomlist/ruisibao2.png"
+	}]
+}
