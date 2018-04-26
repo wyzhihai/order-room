@@ -46,7 +46,7 @@
 		<router-link to="/"><img class="member" src="static/img/0@2x.png" alt=""></router-link>
 		<div class="recommend">
 			<h2>为你推荐</h2>
-			<hotel-info  v-for="(item,index) in hotels" :info="item" :key="index"></hotel-info>
+			<hotel-info  v-for="(item,index) in hotels" :info="item" :key="item.id"></hotel-info>
 		</div>
 		<star-level @close="close" v-if="showStarLevel"></star-level>
 		<select-date @close="close" v-if="showSelectDate"></select-date>
@@ -63,7 +63,7 @@ export default {
 			console.log(res);
 			this.$store.commit('saveHotelList',res.body.data)
 		},function(err){
-			console.log(err);
+			// console.log(err);
 		})
 	},
 	filters:{

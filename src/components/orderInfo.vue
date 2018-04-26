@@ -14,18 +14,25 @@
 		</div>
 		<div class="btns">
 			<template v-if="state==0">
+				<div @click="del" class="btn">删除</div>
 				<div @click="orderAgain" class="btn">再次预定</div>
 			</template>
 			<template v-else-if="state==1">
-				<div @click="pay" class="btn">去付款</div>
+				<div @click="cancel" class="btn">取消</div>
+				<div @click="goToPay" class="btn">去付款</div>
 			</template>
 			<template v-else-if="state==2">
 				<div @click="orderAgain" class="btn">再次预定</div>
 				<div @click="comment" class="btn">评价</div>
 			</template>
-			<template v-else="state==3">
+			<template v-else-if="state==3">
 				<div @click="orderAgain" class="btn">再次预定</div>
 			</template>
+			<template v-else>
+				<div @click="del" class="btn">删除</div>
+				<div @click="orderAgain" class="btn">再次预定</div>
+			</template>
+			
 			
 		</div>
 	</div>
@@ -35,28 +42,70 @@ export default{
 	props:['info'],
 	data(){
 		return{
-			allState:['已超时','待付款','待评价','已评价']
+			allState:['已超时','待付款','待评价','已评价','已取消']
 		}
 	},
 	computed:{
 		state(){
-			if(!this.info.whether&&!this.info.isPay)
-				return 0;
-			if(!this.info.whether&&this.info.isPay)
-				return 1;
-			if(this.info.whether&&!this.info.isCom)
-				return 2;
-			if(this.info.whether&&this.info.isCom)
-				return 3;
+			if(this.info.whether=='0'){
+				if(!this.info.isPay)
+					return 0;
+				else
+					return 1
+			}else if(this.info.whether=='1'){
+				if(!this.info.isCom)
+					return 3;
+				else
+					return 2;
+			}else if(this.info.whether=='2'){
+				return 4;
+			}/*else if(this.info.whether=='3'){
+				return 5;
+			}else{
+				return 6;
+			}*/
+			// if(!this.info.whether&&!this.info.isPay)
+			// 	return 0;
+			// if(!this.info.whether&&this.info.isPay)
+			// 	return 1;
+			// if(this.info.whether&&!this.info.isCom)
+			// 	return 2;
+			// if(this.info.whether&&this.info.isCom)
+			// 	return 3;
 		}
 
 	},
 	methods:{
+		cancel(){
+			this.$http.get('http://api.shiyushuo.net/WXBOOK/book.php',{
+				params:{act:'cancelOrder',danhao:this.info.danhao}
+			}).then(function(res){
+				alert(res.body.Msg)
+				if(res.body.code==200){
+					// this.$router.replace({path:'/orderState/canceled/'+this.info.danhao})
+					this.$emit('refresh')
+				}
+			},function(err){
+				console.log(err)
+			})
+		},
+		del(){
+			this.$http.get('http://api.shiyushuo.net/WXBOOK/book.php',{
+				params:{act:'delOrder',danhao:this.info.danhao}
+			}).then(function(res){
+				alert(res.body.Msg)
+				if(res.body.code==200){
+					this.$emit('refresh')
+				}
+			},function(err){
+				console.log(err)
+			})
+		},
 		comment(){
 			this.$router.push({path:"/addComment",query:{
 				hotelName:this.info.fullname,
 				hotelId:this.info.branchId,
-				orderId:this.info.orderId
+				orderId:this.info.danhao
 			}})
 		},
 		orderAgain(){
@@ -64,58 +113,61 @@ export default{
 				id:this.info.branchId
 			}})
 		},
-		pay(){
-			var data ={
-				branchId:this.info.branchId,
-				danhao:this.info.danhao,
-				openId:this.$store.state.openId,
-				styleId:this.info.styleId,
-				stime:this.info.stime,
-				etime:this.info.etime
-			} ;
-			console.log(data)
-			this.$http.post('http://api.shiyushuo.net/WXBOOK/sdk/example/jsapi.php',data,{emulateJSON:true}).then(function(res){
-				console.log(res)
-				// var map={'200':'success','206':'fail'}
-				// this.$store.commit('changeOrderState',res.body.code);
-				// this.$router.push('/orderState/'+map[this.orderState])
-				if(res.data.code==200){
-					console.log('####')
-					console.log(res.data.data)
-					this.jsApiCall(res.data.data);
-				}
-				else{
-					alert(res.data.Msg);
-				}
-			},function(err){
-				console.log(err)
-			})
+		goToPay(){
+			this.$router.push({path:"/orderState/wait/"+this.info.danhao})
 		},
-		jsApiCall(a)
-		{
-			var obj = eval('(' + a + ')');
-			WeixinJSBridge.invoke(
-				'getBrandWCPayRequest',
-				obj,
-				function(res){
-					WeixinJSBridge.log(res.err_msg);
-					if(res.err_msg == "get_brand_wcpay_request:ok"){
-                            //微信支付成功，进行支付成功处理
-                            alert("微信支付成功...");
-                            this.$store.commit('changeOrderState','success')
-                            this.$router.push('/orderState/success')
-                        }else if(res.err_msg == "get_brand_wcpay_request：cancel"){
-                        	alert("取消支付！");
-                        	this.$store.commit('changeOrderState','cancel')
-                        	this.$router.push('/orderState/success/wait')
-                        }else{
-                        	alert("支付失败！");
-                        	this.$store.commit('changeOrderState','fail')
-                        	this.$router.push('/orderState/fail')
-                        }
-                    }.bind(this)
-                    );
-		}
+		// pay(){
+		// 	var data ={
+		// 		branchId:this.info.branchId,
+		// 		danhao:this.info.danhao,
+		// 		openId:this.$store.state.openId,
+		// 		styleId:this.info.styleId,
+		// 		stime:this.info.stime,
+		// 		etime:this.info.etime
+		// 	} ;
+		// 	console.log(data)
+		// 	this.$http.post('http://api.shiyushuo.net/WXBOOK/sdk/example/jsapi.php',data,{emulateJSON:true}).then(function(res){
+		// 		console.log(res)
+		// 		// var map={'200':'success','206':'fail'}
+		// 		// this.$store.commit('changeOrderState',res.body.code);
+		// 		// this.$router.push('/orderState/'+map[this.orderState])
+		// 		if(res.data.code==200){
+		// 			console.log('####')
+		// 			console.log(res.data.data)
+		// 			this.jsApiCall(res.data.data);
+		// 		}
+		// 		else{
+		// 			alert(res.data.Msg);
+		// 		}
+		// 	},function(err){
+		// 		console.log(err)
+		// 	})
+		// },
+		// jsApiCall(a)
+		// {
+		// 	var obj = eval('(' + a + ')');
+		// 	WeixinJSBridge.invoke(
+		// 		'getBrandWCPayRequest',
+		// 		obj,
+		// 		function(res){
+		// 			WeixinJSBridge.log(res.err_msg);
+		// 			if(res.err_msg == "get_brand_wcpay_request:ok"){
+  //                           //微信支付成功，进行支付成功处理
+  //                           alert("微信支付成功...");
+  //                           this.$store.commit('changeOrderState','success')
+  //                           this.$router.push('/orderState/success')
+  //                       }else if(res.err_msg == "get_brand_wcpay_request：cancel"){
+  //                       	alert("取消支付！");
+  //                       	this.$store.commit('changeOrderState','cancel')
+  //                       	this.$router.push('/orderState/success/wait')
+  //                       }else{
+  //                       	alert("支付失败！");
+  //                       	this.$store.commit('changeOrderState','fail')
+  //                       	this.$router.push('/orderState/fail')
+  //                       }
+  //                   }.bind(this)
+  //                   );
+		// }
 	}
 }
 </script>

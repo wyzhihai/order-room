@@ -38,8 +38,6 @@ export default{
 			userInfo:state=>state.userInfo,
 		}),
 		price:function(){
-			if(!this.userInfo)
-				return this.info.lowPrice;
 			switch(this.userInfo.vipRank){
 				case '':
 				return this.info.lowPrice;
@@ -49,6 +47,8 @@ export default{
 				return this.info.allPrice.goldPrice;
 				case '钻石会员':
 				return this.info.allPrice.diamondPrice;
+				default:
+				return this.info.lowPrice;
 			} 
 		},
 	},

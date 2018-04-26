@@ -106,6 +106,7 @@ export default{
 			styleId:state=>state.roomList[state.currentRoomId].styleId,
 			openId:state=>state.openId,
 			roomIndex:state=>state.currentRoomId,
+			currentHotel:state=>state.currentHotel,
 		}),
 		...mapGetters({
 			hotelId:'currentHotelId',
@@ -138,7 +139,7 @@ export default{
 	},
 	methods:{
 		createOrder(){
-			if(this.name==''){
+			if(this.userName==''){
 				alert('请输入入住人姓名！！')
 				return;
 			}else{
@@ -157,9 +158,19 @@ export default{
 			},{
 				emulateJSON:true,
 			}).then(function(res){
-				this.$store.commit('saveOrderId',res.body.danhao);
-				this.$store.commit('saveTotalAmount',this.amount);
-				this.pay();
+				if(res.body.code==200){
+					// var orderInfo={
+					// 	danhao:res.body.danhao,
+					// 	money:this.totalAmount,
+					// 	names:this.currentHotel.name,
+					// 	address:this.currentHotel.branchCity+this.currentHotel.branchDistrict+this.currentHotel.branchAddres,
+
+					// }
+					// this.$store.commit('saveOrderInfo',orderInfo);
+					this.$router.push({path:'/orderState/wait/'+res.body.danhao});
+				}else{
+					alert(res.body.Msg)
+				}
 			},function(err){
 				console.log(err)
 			})

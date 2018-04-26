@@ -10,17 +10,18 @@ import {mapState} from 'vuex'
 export default {
 	name: 'App',
 	created(){
-		var openId=sessionStorage.getItem('openid')
-		var wxUser=sessionStorage.getItem('nicename')
-		var wxImg=sessionStorage.getItem('headimgurl')
-		this.$store.commit('saveOpenId',openId);
-		this.$store.commit('saveWxInfo',{wxUser,wxImg})
+        // sessionStorage.setItem('openid','##########')
+        var openId=sessionStorage.getItem('openid')
+        var wxUser=sessionStorage.getItem('nicename')
+        var wxImg=sessionStorage.getItem('headimgurl')
+        this.$store.commit('saveOpenId',openId);
+        this.$store.commit('saveWxInfo',{wxUser,wxImg})
 
-		var stime=new Date();
-		var etime=new Date(stime.getTime()+24*60*60*1000);
-		this.$store.commit('changeTime',{stime,etime});
+        var stime=new Date();
+        var etime=new Date(stime.getTime()+24*60*60*1000);
+        this.$store.commit('changeTime',{stime,etime});
 
-		var map, geolocation;
+        var map, geolocation;
     // //加载地图，调用浏览器定位服务
     map = new AMap.Map('container', {
     	resizeEnable: true
@@ -61,16 +62,14 @@ export default {
     	console.log(data)
     }
     this.$http.get('http://api.shiyushuo.net/WXBOOK/book.php',{
-        params:{act:'wxin',wxid:''}
+        params:{act:'wxin',wxid:this.openId}
     }).then(function(res){
         console.log(res)
         if(res.body.code==200)
         {
-            alert(res.body.Msg)
             this.$store.commit('saveLoginInfo',res.body.data)
         }
-        else{
-            alert(res.body.Msg)
+        else if(res.body.code==206){
             this.$store.commit('changeShouldLogin',true);
         }
     },function(err){
@@ -86,6 +85,7 @@ computed:{
 	...mapState({
 		showLogin:state=>state.showLogin,
         shouldLogin:state=>state.shouldLogin,
+        openId:state=>state.openId,
     })
 },
 methods:{

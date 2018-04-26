@@ -1,7 +1,7 @@
 <template>
 	<div class='bg'>
 		<header-bar class="border" back="/" title="我的订单"></header-bar>
-		<order-info v-for="(item,index) in orderList" :key="index" :info="item"></order-info>
+		<order-info @refresh='refresh' v-for="(item,index) in filtered" :key="index" :info="item"></order-info>
 	</div>
 </template>
 <script>
@@ -26,6 +26,23 @@ export default{
 		...mapState({
 			phone:state=>state.phone,
 		}),
+		filtered(){
+			return this.orderList.filter(function(item){
+				return item.whether=='0'||item.whether=='1'||item.whether=='2'
+			})
+		}
+	},
+	methods:{
+		refresh(){
+			this.$http.get('http://api.shiyushuo.net/WXBOOK/book.php',{
+				params:{phone:this.phone,act:'myOrder'}
+			}).then(function(res){
+				console.log(res)
+				this.orderList=res.body.data
+			},function(err){
+				console.log(err)
+			})
+		}
 	}
 }
 </script>

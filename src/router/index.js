@@ -83,19 +83,9 @@ export default new Router({
   name:'map',
   component:map
 },{
-  path:'/orderState',
+  path:'/orderState/:state/:id',
   name:'orderState',
   component:orderState,
-  children:[{
-    path:'wait',
-    component:wait
-  },{
-    path:'success',
-    component:success
-  },{
-    path:'fail',
-    component:fail
-  }]
 },{
   path:'/addComment',
   name:'addComment',

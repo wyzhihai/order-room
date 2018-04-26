@@ -21,7 +21,7 @@
 			</div>
 		</div> -->
 		<div class="list">
-			<hotel-info v-for="(item,index) in hotels" :key="index" :info="item"></hotel-info>
+			<hotel-info v-for="(item,index) in hotels" :key="item.id" :info="item"></hotel-info>
 		</div>
 		
 	</div>
@@ -31,8 +31,8 @@ import {mapState} from 'vuex';
 export default{
 	beforeRouteEnter(to,from,next){
 		next(function(vm){
-			if(from.path=="/")
-				vm.loadHotelList();
+			// if(from.path=="/")
+			vm.loadHotelList();
 		})
 	},
 	data:function(){

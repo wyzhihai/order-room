@@ -1,5 +1,5 @@
 <template>
-	<div class="backdrop">
+	<div @click.self="close" class="backdrop">
 		<div class="dialog">
 			<header>会员价 <span @click="close"><img src="/static/img/del.png" alt=""></span></header>
 			<div class="content">

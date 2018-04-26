@@ -97,8 +97,8 @@ export default{
 			}).then(function(res){
 				console.log(res)
 				if(res.data.code == 200){
-					this.$store.commit('saveLoginInfo',res.body.data);
 					this.$emit('closeLogin');
+					this.$store.commit('saveLoginInfo',res.body.data);
 				}else
 				alert(res.data.Msg); 
 

@@ -26,16 +26,16 @@ export default new Vuex.Store({
 		userName:'',
 		userInfo:{},
 		currentPosition:{},
-		orderId:'',
-		totalAmount:0,
 		orderState:'',
 		orderTime:null,
 		wxInfo:null,
 		openId:'',
+		hotelId:'',
+		orderInfo:null
 	},
 	getters:{
 		currentHotelId(state){
-			return state.currentHotel.id;
+			return state.currentHotel.id||state.hotelId;
 		}
 	},
 	mutations:{
@@ -67,6 +67,9 @@ export default new Vuex.Store({
 		},
 		saveHotel(state,data){
 			state.currentHotel=data;
+		},
+		saveHotelId(state,id){
+			state.hotelId=id;
 		},
 		saveComCount(state,count){
 			state.currentHotel.comCount=count;
@@ -100,14 +103,8 @@ export default new Vuex.Store({
 			state.phone=data.phone;
 			state.userInfo=data;
 		},
-		saveOrderId(state,id){
-			state.orderId=id;
-		},
 		saveOrderTime(state,time){
 			state.orderTime=time;
-		},
-		saveTotalAmount(state,amount){
-			state.totalAmount=amount;
 		},
 		changeSearchResult(state,b){
 			state.searchResult=b;
@@ -120,6 +117,9 @@ export default new Vuex.Store({
 		},
 		saveOpenId(state,id){
 			state.openId=id;
+		},
+		saveOrderInfo(state,data){
+			state.orderInfo=data;
 		}
 	}
 })

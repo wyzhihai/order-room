@@ -33,6 +33,7 @@
 import {mapState} from 'vuex'
 export default{
 	beforeRouteEnter(to,from,next){
+		console.log(from.path)
 		next(function(vm){
 			if(from.path=="/hotelList"||from.path=="/myOrder"||from.path=='/bookMark'||from.path=='/'){
 				vm.from=from.path;
@@ -108,16 +109,23 @@ export default{
 		})
 	},
 	methods:{
+		formatDate(date){
+			return date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
+		},
 		loadRoomList(){
-			var params={
+			var body={
 				act:'detail',
+				wxid:this.openId,
 				branchId:this.hotelId,
 				longitude:this.longitude,
-				Latitude:this.latitude
+				Latitude:this.latitude,
+				stime:this.formatDate(this.stime),
+				etime:this.formatDate(this.etime)
 			}
-			if(this.from=='/bookMark'||this.from=='/myOrder')
-				params.act='idDetail';
-			this.$http.get('http://api.shiyushuo.net/WXBOOK/book.php',{params}).then(function(res){
+			// if(this.from=='/bookMark'||this.from=='/myOrder'||this.from=='/orderState'||this.from=='/')
+			if(this.from!='/hotelList')
+				body.act='idDetail';
+			this.$http.post('http://api.shiyushuo.net/WXBOOK/book.php',body,{emulateJSON:true}).then(function(res){
 				console.log('room list',res)
 				var currentHotel={
 					Latitude:res.body.Latitude,
