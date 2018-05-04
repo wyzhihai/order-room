@@ -4,14 +4,14 @@
 		<div class="img" :style="{backgroundImage:'url('+info.img[0]+')',backgroundSize:'cover'}"></div>
 		<div class="info">
 			<div class="left">
-				<h3>{{info.styleName+info.roomName}}</h3>
-				<span class="gray">{{22}}m<small><sup>2</sup></small> | {{'单人床1.5m'}} | {{true?'有窗':'无窗'}}</span>
+				<h3>{{info.styleName}}</h3>
+				<span class="gray">{{22}}m<small><sup>2</sup></small> | {{'单人床1.5m'}} | {{true?'有窗':'无窗'}}</span><br>
 				<span class="original-price">
-					<span :class="phone?'gray':'orange'">
+					<span :class="userInfo.vipRank?'gray':'orange'">
 						￥{{info.oldPrice}}
 					</span>
-				</span>
-				<span v-if="phone" class="vip-price">会员价：<span class="orange"><small>￥</small>{{price}}</span></span>
+				</span><br>
+				<span v-if="userInfo.vipRank" class="vip-price">会员价：<span class="orange"><small>￥</small>{{price}}</span></span><br>
 				<span @click.stop.prevent="openPrice" class="check">查看会员价</span>
 			</div>
 			<a @click.stop.prevent="orderRoom" href="#" :class="{disabled:!canOrder}" class="right">
@@ -40,7 +40,7 @@ export default{
 		price:function(){
 			switch(this.userInfo.vipRank){
 				case '':
-				return this.info.lowPrice;
+				return this.info.oldPrice;
 				case '大众会员':
 				return this.info.allPrice.publicPrice;
 				case '黄金会员':
@@ -48,7 +48,7 @@ export default{
 				case '钻石会员':
 				return this.info.allPrice.diamondPrice;
 				default:
-				return this.info.lowPrice;
+				return this.info.oldPrice;
 			} 
 		},
 	},
@@ -89,10 +89,10 @@ export default{
 		align-items:center;
 		.left{
 			flex-grow:1;
-			display:flex;
-			flex-direction:column;
-			justify-content:space-around;
-			height:2.933333rem;
+			// display:flex;
+			// flex-direction:column;
+			// justify-content:space-around;
+			// height:2.933333rem;
 			h3{
 				font-size:0.4rem;
 				color:#010101;
@@ -100,6 +100,7 @@ export default{
 			.gray{
 				color:#999;
 				font-size:0.32rem;
+				margin:0.32rem 0;
 			}
 			.original-price{
 				.gray{
@@ -113,6 +114,8 @@ export default{
 			.vip-price{
 				font-size:0.32rem;
 				color:#333;
+				margin-top:0.213333rem;
+				margin-bottom:0.32rem;
 				.orange{
 					font-size:0.4rem;
 					color:#ea5319;

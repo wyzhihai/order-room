@@ -7,7 +7,7 @@
 		<div class="wrapper">
 			<img src="static/img/img.png" alt="">
 			<div class="text">上传图片</div>
-			<input @change="addFile" class="file" type="file" multiple name="image[]">
+			<input @change="addFile" :disabled="disabled" class="file" type="file" multiple name="image[]">
 		</div>
 	</div>
 </template>
@@ -18,6 +18,7 @@ export default{
 			files:[],
 		}
 	},
+	props:['disabled'],
 	computed:{
 		urls(){
 			return this.files.map(function(file){
@@ -33,6 +34,8 @@ export default{
 			}.bind(this));
 		},
 		delFile(index){
+			if(this.disabled)
+				return;
 			this.files.splice(index,1);
 		}
 	}

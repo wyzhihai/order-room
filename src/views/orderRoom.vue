@@ -10,8 +10,8 @@
 			<div class="info">
 				<h3>{{styleName}}{{roomName}}</h3>
 				<div class="date">入住：{{stime|dateFormat}}&nbsp;&nbsp;&nbsp;&nbsp;离店：{{etime|dateFormat}}</div>
-				<div class="gray">{{styleName}}{{roomName}}&nbsp;&nbsp;&nbsp;共{{days}}晚
-					<router-link class="right" to="/roomDetail">房型详情</router-link>
+				<div class="gray">{{styleName}}{{roomName}}&nbsp;&nbsp;&nbsp;共{{days(stime,etime)}}晚
+					<router-link class="right" :to='{path:"/roomDetail",query:{index:roomIndex}}'>房型详情</router-link>
 				</div>
 			</div>
 		</div>
@@ -47,7 +47,7 @@
 		</div>
 		<div class="footer">
 			<div @click="showDetail=!showDetail" class="amount">
-				<span class="orange">￥{{amount}}</span>
+				<span class="orange">￥{{totalPrice}}</span>
 				<span :class="{'up':showDetail}" class="gray">明细</span>
 			</div>
 			<div @click="createOrder" class="btn">去支付</div>
@@ -56,20 +56,20 @@
 		<div @click="showDetail=!showDetail" v-show="showDetail" class="backdrop">
 			<div class="block">
 				<div class="div1">
-					<span>{{styleName}}{{roomName}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span>一间 {{days}}晚</span>
+					<span>{{styleName}}{{roomName}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span>一间 {{days(stime,etime)}}晚</span>
 				</div>
-				<div class="div1">
-					<span>{{stime|dateFormat}}至{{etime|dateFormat}}</span>
+				<div v-for="item in slice" class="div1">
+					<span>{{item.s|dateFormat}}至{{item.e|dateFormat}}<span v-if="item.b">(周末溢价)</span></span>
 					<div style="float: right;">
-						<span style="color: #EA5319;">￥{{price}}</span>
+						<span style="color: #EA5319;">￥{{item.b?yjPrice:noyjPrice}}</span>
 						<span style="color: #EA5319;">x</span>
-						<span style="color: #EA5319;">{{days}}</span>
+						<span style="color: #EA5319;">{{days(item.s,item.e)}}</span>
 					</div>
 				</div>
 				<div class="div1">
 					<span>在线支付</span>
 					<div style="float: right;">
-						<span style="color: #EA5319;">￥{{amount}}</span>
+						<span style="color: #EA5319;">￥{{totalPrice}}</span>
 					</div>
 				</div>
 			</div>
@@ -82,6 +82,8 @@ export default{
 	created:function(){
 		if(this.userInfo)
 			this.userName=this.userInfo.name
+		console.log(this.userInfo);
+		console.log(this.wxInfo)
 	},
 	data:function(){
 		return{
@@ -92,14 +94,21 @@ export default{
 	},
 	computed:{
 		...mapState({
+			wxInfo:state=>state.wxInfo,
 			userInfo:state=>state.userInfo,
 			phone:state=>state.phone,
 			roomName:state=>state.roomList[state.currentRoomId].roomName,
 			styleName:state=>state.roomList[state.currentRoomId].styleName,
 			stime:state=>state.searchInfo.stime,
 			etime:state=>state.searchInfo.etime,
+
+			totalPrice:state=>state.roomList[state.currentRoomId].totalPrice,
+			yjPrice:state=>state.roomList[state.currentRoomId].yjPrice,
+			noyjPrice:state=>state.roomList[state.currentRoomId].noyjPrice,
+			oldPrice:state=>state.roomList[state.currentRoomId].oldPrice,
 			lowPrice:state=>state.roomList[state.currentRoomId].lowPrice,
 			allPrice:state=>state.roomList[state.currentRoomId].allPrice,
+
 			priceId:state=>state.roomList[state.currentRoomId].priceId,
 			colour:state=>state.roomList[state.currentRoomId].colour,
 			orderId:state=>state.orderId,
@@ -111,12 +120,39 @@ export default{
 		...mapGetters({
 			hotelId:'currentHotelId',
 		}),
-		days:function(){
-			return (this.etime.getTime()-this.stime.getTime())/1000/60/60/24
+		slice(){
+			var s=this.stime,e,b,arr=[],p=24*60*60*1000;
+			var days=this.days(this.stime,this.etime);
+			for(var i=1;i<=days;i++){
+				if(s.getDay()==5||s.getDay()==6){
+					b=true;
+				}else{
+					b=false;
+				}
+				e=new Date(this.stime.getTime()+p*i)
+				if(b){
+					if(e.getDay()==5||e.getDay()==6)
+						continue;
+					else{
+						arr.push({s,e,b})
+						s=e;
+					}
+				}else{
+					if(e.getDay()==5||e.getDay()==6){
+						arr.push({s,e,b})
+						s=e;
+					}
+					else
+						continue;
+				}
+			}
+			if(s!=e)
+				arr.push({s,e,b});
+			return arr;
 		},
 		price:function(){
-			if(!this.userInfo)
-				return this.lowPrice;
+			if(!this.phone)
+				return this.oldPrice;
 			switch(this.userInfo.vipRank){
 				case '':
 				return this.lowPrice;
@@ -126,11 +162,13 @@ export default{
 				return this.allPrice.goldPrice;
 				case '钻石会员':
 				return this.allPrice.diamondPrice;
+				default:
+				return this.lowPrice;
 			} 
 		},
-		amount:function(){
-			return (this.price*this.days).toFixed(2);
-		}
+		// amount:function(){
+		// 	return (this.price*this.days).toFixed(2);
+		// }
 	},
 	filters:{
 		dateFormat(date){
@@ -138,8 +176,11 @@ export default{
 		}
 	},
 	methods:{
+		days:function(stime,etime){
+			return (etime.getTime()-stime.getTime())/1000/60/60/24
+		},
 		createOrder(){
-			if(this.userName==''){
+			if(!this.userName){
 				alert('请输入入住人姓名！！')
 				return;
 			}else{

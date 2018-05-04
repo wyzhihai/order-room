@@ -5,11 +5,11 @@
 			<div>
 				<h3>{{info.name}}</h3>
 				<span class="blue">
-					{{'5.0'}}分
-					{{'很好'}}
+					{{info.score||'5.0'}}分
+					{{scoreText}}
 				</span><br>
 				<span class="gray">
-					<span>距我{{info.distance}}，{{info.address}}</span>
+					<span>距我{{info.distance||'12公里'}}，{{info.address}}</span>
 				</span>
 			</div>
 			<div>
@@ -21,7 +21,19 @@
 </template>
 <script type="text/javascript">
 export default{
-	props:['info']
+	props:['info'],
+	computed:{
+		scoreText(){
+			if(!this.info.score||this.info.score>4.8)
+				return '很好';
+			else if(this.info.score>4.0&&this.info.score<=4.8)
+				return '好';
+			else if(this.info.score>=3.0&&this.info.score<=4.0)
+				return '一般';
+			else
+				return '差'
+		}
+	}
 }
 </script>
 <style scoped lang="less">

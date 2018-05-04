@@ -10,7 +10,7 @@
 			<img class="pic" src="static/img/roomlist/particularsbanner-1.png" alt="">
 			<img class='btn' @click.prevent="toggleCollect" :src="collected?'static/img/collect-pressed.png':'static/img/collect-default.png'">
 		</router-link>
-		<router-link class="link" to="/comments" style="border-bottom:1px solid #dfdfdf">
+		<router-link class="link" :to="{path:'/comments/'+hotel.id}" style="border-bottom:1px solid #dfdfdf">
 			<h3>{{hotel.name}}</h3>
 			<span class="blue score">{{'5.0'}}<small>分</small> {{'很好'}}</span>
 			<span class="blue right">{{comCount}}条评论</span>
@@ -25,8 +25,8 @@
 			<span class="right">共{{days}}晚</span>
 		</div>
 		<room-info @openPrice="showAllPrice" v-for="(item,index) in roomList" :info='item' :key="index" :index="index"></room-info>
-		<vip-price @close="showPrice=false" :allPrice="allPrice" v-if="showPrice"></vip-price>
-		<select-date @close="showDate=false" v-if="showDate"></select-date>
+		<vip-price @close="showPrice=false" :allPrice="allPrice" :rank="vipRank" v-if="showPrice"></vip-price>
+		<select-date @close="closeDate" v-if="showDate"></select-date>
 	</div>
 </template>
 <script>
@@ -37,7 +37,6 @@ export default{
 		next(function(vm){
 			if(from.path=="/hotelList"||from.path=="/myOrder"||from.path=='/bookMark'||from.path=='/'){
 				vm.from=from.path;
-				vm.loadRoomList();
 			}
 		})
 	},
@@ -59,6 +58,7 @@ export default{
 				}
 			},err=>console.log(err))
 		}
+		this.loadRoomList();
 		
 	},
 	destroyed(){
@@ -99,6 +99,7 @@ export default{
 			etime:state=>state.searchInfo.etime,
 			roomList:state=>state.roomList,
 			userName:state=>state.userName,
+			vipRank:state=>state.userInfo.vipRank,
 			openId:state=>state.openId,
 			phone:state=>state.phone,
 			longitude:state=>state.searchInfo.longitude,
@@ -112,19 +113,23 @@ export default{
 		formatDate(date){
 			return date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
 		},
+		closeDate(){
+			this.showDate=false;
+			this.loadRoomList();
+		},
 		loadRoomList(){
 			var body={
-				act:'detail',
+				act:'idDetail',
+				vipRank:this.vipRank,
 				wxid:this.openId,
 				branchId:this.hotelId,
 				longitude:this.longitude,
-				Latitude:this.latitude,
+				latitude:this.latitude,
 				stime:this.formatDate(this.stime),
 				etime:this.formatDate(this.etime)
 			}
-			// if(this.from=='/bookMark'||this.from=='/myOrder'||this.from=='/orderState'||this.from=='/')
-			if(this.from!='/hotelList')
-				body.act='idDetail';
+			// if(this.from!='/hotelList')
+			// 	body.act='idDetail';
 			this.$http.post('http://api.shiyushuo.net/WXBOOK/book.php',body,{emulateJSON:true}).then(function(res){
 				console.log('room list',res)
 				var currentHotel={
@@ -139,12 +144,12 @@ export default{
 					name:res.body.fullname,
 					comCount:res.body.comCount
 				}
-				if(this.from=='/hotelList'){
-					this.$store.commit('saveComCount',res.body.comCount)
-					this.$store.commit('saveHotelCity',this.destination||this.currentCity)
-				}
-				else
-					this.$store.commit('saveHotel',currentHotel)
+				// if(this.from=='/hotelList'){
+				// 	this.$store.commit('saveComCount',res.body.comCount)
+				// 	this.$store.commit('saveHotelCity',this.destination||this.currentCity)
+				// }
+				// else
+				this.$store.commit('saveHotel',currentHotel)
 				this.$store.commit('saveRoomList',res.body.data);
 				
 			},function(err){
@@ -226,6 +231,7 @@ export default{
 			position:fixed;
 			line-height:1.066667rem;
 			color:#fff;
+			z-index:3;
 			text-align:center;
 			font-size:0.48rem;
 			.back{
@@ -248,6 +254,7 @@ export default{
 			border-radius:0.533333rem;
 			bottom:-0.85rem;
 			right:0.333333rem;
+			z-index:1;
 		}
 	}
 	.link{

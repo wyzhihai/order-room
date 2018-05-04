@@ -5,8 +5,8 @@
 			<div>
 				<h3>{{name}}</h3>
 				<span class="blue">
-					<strong>{{"5.0"}}</strong><small>分</small>
-					<span>{{'很好'}}</span>
+					<strong>{{info.score||"5.0"}}</strong><small>分</small>
+					<span>{{scoreText}}</span>
 				</span>
 				<span class="gray">
 					{{orderCount}}人消费<br>
@@ -43,10 +43,20 @@ export default{
 			return this.info.lowPrice;
 		},
 		img(){
-			return this.info.cover||'/static/img/hotellist/home-1.png';
+			return this.info.cover||'./static/img/hotellist/home-1.png';
 		},
 		time(){
 			return Math.ceil(Math.random()*10);
+		},
+		scoreText(){
+			if(!this.info.score||this.info.score>4.8)
+				return '很好';
+			else if(this.info.score>4.0&&this.info.score<=4.8)
+				return '好';
+			else if(this.info.score>=3.0&&this.info.score<=4.0)
+				return '一般';
+			else
+				return '差'
 		}
 	},
 	methods:{

@@ -7,6 +7,7 @@ import hotelList from '@/views/hotelList'
 import bookmark from '@/views/bookmark'
 import myOrder from '@/views/myOrder'
 import member from '@/views/member'
+import myPoint from '@/views/myPoints'
 import roomList from '@/views/roomList'
 import hotelPhoto from '@/views/hotelPhoto'
 import roomDetail from '@/views/roomDetail'
@@ -18,6 +19,8 @@ import wait from '@/components/wait'
 import success from '@/components/success'
 import fail from '@/components/fail'
 import addComment from '@/views/addComment'
+import equities from '@/views/equities'
+import upgrade from '@/views/upgrade'
 import test from '@/views/test'
 
 // import calendarTest from '@/views/calendarTest'
@@ -59,6 +62,10 @@ export default new Router({
   name:'member',
   component:member
 },{
+  path:'/myPoint',
+  name:'myPoint',
+  component:myPoint
+},{
   path:'/roomList',
   name:'roomList',
   component:roomList
@@ -75,7 +82,7 @@ export default new Router({
   name:'orderRoom',
   component:orderRoom
 },{
-  path:'/comments',
+  path:'/comments/:hotelId',
   name:'comments',
   component:comments
 },{
@@ -90,6 +97,14 @@ export default new Router({
   path:'/addComment',
   name:'addComment',
   component:addComment
+},{
+  path:'/equities',
+  name:'equities',
+  component:equities
+},{
+  path:'/upgrade',
+  name:'upgrade',
+  component:upgrade
 }
 ]
 })

@@ -1,5 +1,5 @@
 <template>
-	<div class="item">
+	<div is="router-link" tag="div" :to="'/orderState'+routes[state]+info.danhao" class="item">
 		<div class="pic">
 			<img :src="info.cover||'static/img/myOrder/dingdan-1.png'" alt="">
 		</div>
@@ -14,23 +14,24 @@
 		</div>
 		<div class="btns">
 			<template v-if="state==0">
-				<div @click="del" class="btn">删除</div>
-				<div @click="orderAgain" class="btn">再次预定</div>
+				<div @click.stop="del" class="btn">删除</div>
+				<div @click.stop="orderAgain" class="btn">再次预定</div>
 			</template>
 			<template v-else-if="state==1">
-				<div @click="cancel" class="btn">取消</div>
-				<div @click="goToPay" class="btn">去付款</div>
+				<div @click.stop="cancel" class="btn">取消</div>
+				<div @click.stop="goToPay" class="btn">去付款</div>
 			</template>
 			<template v-else-if="state==2">
-				<div @click="orderAgain" class="btn">再次预定</div>
-				<div @click="comment" class="btn">评价</div>
+				<div @click.stop="comment" class="btn">评价</div>
+				<div @click.stop="orderAgain" class="btn">再次预定</div>
 			</template>
 			<template v-else-if="state==3">
-				<div @click="orderAgain" class="btn">再次预定</div>
+				<div @click.stop="checkComment" class="btn">查看评价</div>
+				<div @click.stop="orderAgain" class="btn">再次预定</div>
 			</template>
 			<template v-else>
-				<div @click="del" class="btn">删除</div>
-				<div @click="orderAgain" class="btn">再次预定</div>
+				<div @click.stop="del" class="btn">删除</div>
+				<div @click.stop="orderAgain" class="btn">再次预定</div>
 			</template>
 			
 			
@@ -42,11 +43,15 @@ export default{
 	props:['info'],
 	data(){
 		return{
-			allState:['已超时','待付款','待评价','已评价','已取消']
+			allState:['已超时','待付款','待评价','已评价','已取消','已删除'],
+			routes:['/timeout/','/wait/','/success/','/commented/','/canceled/']
 		}
 	},
 	computed:{
 		state(){
+			if(this.info.isCancel){
+				return 4;
+			}
 			if(this.info.whether=='0'){
 				if(!this.info.isPay)
 					return 0;
@@ -57,9 +62,10 @@ export default{
 					return 3;
 				else
 					return 2;
-			}else if(this.info.whether=='2'){
-				return 4;
-			}/*else if(this.info.whether=='3'){
+			}else{
+				return 5;
+			}
+			/*else if(this.info.whether=='3'){
 				return 5;
 			}else{
 				return 6;
@@ -107,6 +113,9 @@ export default{
 				hotelId:this.info.branchId,
 				orderId:this.info.danhao
 			}})
+		},
+		checkComment(){
+			this.$router.push({path:'/comments/'+this.info.branchId})
 		},
 		orderAgain(){
 			this.$router.push({path:"/roomList",query:{

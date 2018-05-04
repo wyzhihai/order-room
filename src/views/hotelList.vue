@@ -1,7 +1,7 @@
 <template>
 	<div class="bg">
 		<header-bar back="/" title="锐思堡国际公寓"></header-bar>
-		<div v-if="searchFail" class="error"><img src="/static/img/warning.png" alt="">暂无相关酒店，我们为你推荐附近酒店</div>
+		<div v-if="searchFail" class="error"><img src="static/img/warning.png" alt="">暂无相关酒店，我们为你推荐附近酒店</div>
 		<!-- <div class="sort-bar">
 			<div class="item">
 				<span class="text">3月27日<br>入住1晚</span>
@@ -54,6 +54,7 @@ export default{
 	},
 	methods:{
 		loadHotelList(){
+			this.$store.commit('saveHotelList',[])
 			this.$http.get('http://api.shiyushuo.net/WXBOOK/book.php',
 			{	
 				params:{

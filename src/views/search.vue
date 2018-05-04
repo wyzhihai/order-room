@@ -43,22 +43,23 @@
 		data:function(){
 			return{
 				text:'',
+				history:["禅城区","南海区","三水区","花都区"],
 				other:["万达广场"],
 				hot:["禅城区","南沙区","芙蓉区","萝岗区","三水区","包河区","南海区","花都区",'武陵区','岳麓区','城中区'],
 			}
 		},
 		computed:{
-			history(){
-				var arr=[];
-				for(var i=0;i<4;i++){
-					var temp=this.hot[Math.floor(Math.random()*11)]
-					if(arr.indexOf(temp)==-1)
-						arr[i]=temp;
-					else
-						i--;
-				}
-				return arr;
-			}
+			// history(){
+			// 	var arr=[];
+			// 	for(var i=0;i<4;i++){
+			// 		var temp=this.hot[Math.floor(Math.random()*11)]
+			// 		if(arr.indexOf(temp)==-1)
+			// 			arr[i]=temp;
+			// 		else
+			// 			i--;
+			// 	}
+			// 	return arr;
+			// }
 		},
 		methods:{
 			select(item){

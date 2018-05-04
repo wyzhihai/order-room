@@ -5,7 +5,7 @@
     <header class="title">
       <router-link class="back" :to="from"><img src="static/img/back-2.png" alt=""></router-link>
       <span class="headtitle">{{hotelName}}</span>
-      <a @click.prevent="upload" href="#" class="btn">发布</a>
+      <span @click.prevent="upload" class="btn">{{loading?'发布中...':'发布'}}</span>
     </header>
     <!-- 评论表情选择 -->
     <div class="ratings-type">
@@ -22,13 +22,13 @@
         <span class="item" v-for="(item, index) in recommend" :key="index" @click="select(item, index,$event)">{{item}}</span>
       </div>
       <section class="user-rating">
-        <textarea disabled  class="form-control" rows="2" placeholder="入住后感觉如何，快来说说酒店的环境，服务，入住房间等情况吧">{{ label }}</textarea>
-        <textarea class="msg" v-model="message" cols="30" rows="5"></textarea>
+        <textarea v-model="label" disabled  class="form-control" rows="2" placeholder="入住后感觉如何，快来说说酒店的环境，服务，入住房间等情况吧"></textarea>
+        <textarea class="msg" :disabled="loading" v-model="message" cols="30" rows="5"></textarea>
         <span class="ratingNumber" v-show="this.message.length < 200">还差{{lackNumber}}字即可发布！</span>
       </section>
     </div>
     <!-- 上传图片 -->
-    <upload ref="upload"></upload>
+    <upload :disabled="loading" ref="upload"></upload>
     <!-- 入住类型 -->
     <!-- <div class="chooseType">
       <p class="text">入住类型</p>
@@ -38,6 +38,8 @@
 </template>
 
 <script>
+// import axios from 'axios'
+// axios.defaults.timeout=5*60*1000;
 import {mapState} from 'vuex'
 export default {
   name: 'HelloWorld',
@@ -79,12 +81,15 @@ export default {
       recommend:['卫生干净', '房间大', '位置好', '性比价高', '环境优雅', '服务热情', '隔音好', '价格实惠'],
       message: '',
       label:'',
-      imgList:[]
+      imgList:[],
+      loading:false
     }
   },
   methods: {
     select (item, index, event) {
       // 判断/点击选中标签添加class
+      if(this.loading)
+        return;
       if (event.target.classList.contains('activeClass')) {
         event.target.classList.remove('activeClass')
       } else {
@@ -103,18 +108,94 @@ export default {
     //   this.activeIndex = index
     // },
     changeScore(index){
+      if(this.loading)
+        return;
       this.score=index;
     },
+    // upload(){
+    //   if(this.loading)
+    //     return;
+    //   if(!this.label||!this.message){
+    //     alert('请输入评论内容')
+    //     return;
+    //   }else{
+    //     this.loading=true
+    //   }
+    //   var formData=new FormData();
+    //   var config={ 
+    //     headers:{'Content-Type':'multipart/form-data' },
+    //     onUploadProgress(e){
+    //       console.log('upload-progress:',e.loaded+':'+e.total)
+    //     },
+    //     onDownloadProgress(e){
+    //       console.log('download-progress:',e)
+    //     }
+    //   };
+    //   this.$refs.upload.files.forEach(function(file){
+    //     formData.append('image[]',file)
+    //   })
+    //   formData.append('act','uploads');
+    //   formData.append('key','image');
+    //   // console.log('formData:',formData)
+    //   axios.post('http://api.shiyushuo.net/WXBOOK/book.php',formData,config).then(function(res){
+    //     console.log('uploaded:res',res)
+    //     this.imgList=res.data;
+    //     this.addComment();
+    //   }.bind(this))
+    //   .catch(function(err){
+    //     console.log(err)
+    //   })
+    // },
+    // addComment(){
+    //   axios.post('http://api.shiyushuo.net/WXBOOK/book.php',{
+    //     act:"addComment",
+    //     branchId:this.hotelId,
+    //     imgArr:JSON.stringify(this.imgList),
+    //     wxid:this.openId,
+    //     danhao:this.orderId,
+    //     content:JSON.stringify({
+    //       star:this.score,
+    //       label:this.label,
+    //       content:this.message,
+    //       checkintime:this.formatDate(this.stime)
+    //     },{headers:{'Content-Type':'application/json' }})
+    //   }).then(function(res){
+    //     console.log('addComment',res)
+    //     this.loading=false;
+    //     if(res.status==200){
+    //       alert(res.statusText);
+    //       // this.$router.push('/comments/'+this.hotelId);
+    //     }
+    //   })
+    //   .catch(function(err){
+    //     console.log('catch:',err)
+    //   })
+    // },
+    
     upload(){
+      if(this.loading)
+        return;
+      if(!this.label||!this.message){
+        alert('请输入评论内容')
+        return;
+      }else{
+        this.loading=true
+      }
       var formData=new FormData();
-      var config={ headers: { 'Content-Type': 'multipart/form-data' } };
+      var config={ 
+        headers:{'Content-Type':'multipart/form-data' },
+        uploadProgress(e){
+          console.log('progress:',e.loaded+':'+e.total)
+        }
+      };
       this.$refs.upload.files.forEach(function(file){
         formData.append('image[]',file)
       })
       formData.append('act','uploads');
       formData.append('key','image');
+      console.log('formData:',formData)
       this.$http.post('http://api.shiyushuo.net/WXBOOK/book.php',formData,config).then(function(res){
-        console.log('upload',res.body)
+        console.log('uploaded:res',res.body)
         this.imgList=res.body;
         this.addComment();
       }.bind(this),function(err){
@@ -138,9 +219,10 @@ export default {
         emulateJSON:true
       }).then(function(res){
         console.log('addComment',res)
+        this.loading=false;
         if(res.body.code==200){
           alert(res.body.Msg);
-          this.$router.push('/comments');
+          this.$router.push('/comments/'+this.hotelId);
         }
       },function(err){
         console.log(err)

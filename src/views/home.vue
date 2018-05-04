@@ -38,9 +38,9 @@
 			</a>
 			<router-link class="btn" to="/hotelList">查找酒店</router-link>
 			<div class="menu">
-				<span @click="toBookMark" class="menu-item">住过/收藏</span>
-				<span @click="toMyOrder" class="menu-item">我的订单</span>
-				<router-link tag="span" to="/" class="menu-item">会员中心</router-link>
+				<span @click="jump({path:'/bookMark'})" class="menu-item">住过/收藏</span>
+				<span @click="jump({path:'/myOrder'})" class="menu-item">我的订单</span>
+				<span @click="jump({path:'/member'})" class="menu-item">会员中心</span>
 			</div>
 		</div>
 		<router-link to="/"><img class="member" src="static/img/0@2x.png" alt=""></router-link>
@@ -50,7 +50,7 @@
 		</div>
 		<star-level @close="close" v-if="showStarLevel"></star-level>
 		<select-date @close="close" v-if="showSelectDate"></select-date>
-		
+
 	</div>
 </template>
 
@@ -59,6 +59,7 @@ import {mapState} from 'vuex';
 export default {
 	name: 'home',
 	created(){
+		this.$store.commit('saveHotelList',[])
 		this.$http.get('http://api.shiyushuo.net/WXBOOK/book.php',{params:{act:'recommend'}}).then(function(res){
 			console.log(res);
 			this.$store.commit('saveHotelList',res.body.data)
@@ -99,6 +100,7 @@ export default {
 			phone:state=>state.phone,
 			shouldLogin:state=>state.shouldLogin,
 			openId:state=>state.openId,
+			userInfo:state=>state.userInfo,
 		}),
 
 		defaultClass(){
@@ -140,18 +142,13 @@ export default {
 		error(err){
 			console.log(err);
 		},
-		toBookMark(){
+		jump(path){
 			if(this.phone)
-				this.$router.push({path:'/bookMark'})
+				this.$router.push(path)
 			else
 				this.$store.commit('changeLogin',true);
 		},
-		toMyOrder(){
-			if(this.phone)
-				this.$router.push({path:'/myOrder'})
-			else
-				this.$store.commit('changeLogin',true);
-		}
+		
 	},
 	beforeRouteLeave(to,from,next){
 		if(to.path=='/hotelList'&&!this.destination&&!this.currentCity)

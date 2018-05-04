@@ -12,10 +12,10 @@
 				<!-- <img v-for="url in info.img" :src="url" alt=""> -->
 			</div>
 			<div class="date">{{info.content.checkintime}}，{{info.time}}
-				<div class="btn">
+				<!-- <div class="btn">
 					<img src="/static/img/xin-default.png" alt="">
 					<span>{{info.likes}}</span>
-				</div>
+				</div> -->
 			</div>
 			<!-- <div class="reply">
 				<span>商家回应：</span>{{info.business}}

@@ -20,7 +20,7 @@
 		<div class="mask1">
 			<div class="ZXZF">
 				<span class="zxzf_title">在线支付</span>
-				<span class="zxzf_price">￥{{orderInfo.money}}</span>
+				<span class="zxzf_price">￥{{orderInfo.totalPrice}}</span>
 				<div style="display: inline-block;" class="more_messages">
 					
 
@@ -61,7 +61,7 @@
 			</div>
 			<div class="seller_message">
 				<div class="more_messages">
-					<router-link tag="span" to="/roomDetail" >
+					<router-link tag="span" :to="'/roomDetail?hotelId='+orderInfo.branch+'&styleId='+orderInfo.styleId+'&priceId='+orderInfo.priceId" >
 						<div class="FYMX">查看房型</div>
 						<div class="right_img">
 							<img class="single_right_img" src="static/img/right@2x.png"/>
@@ -165,8 +165,8 @@ export default{
 			orderInfo:{},
 			states:{timeout:{title:'已超时',tip:'',op1:'删除',op2:'再次预定'},
 			wait:{title:'待付款',tip:'',op1:'取消',op2:'去付款'},
-			comment:{title:'预定成功',tip:'',op1:'评论',op2:'再次预定'},
-			commented:{title:'已评价',tip:'',op1:'删除',op2:'再次预定'},
+			success:{title:'预定成功',tip:'',op1:'评论',op2:'再次预定'},
+			commented:{title:'已评价',tip:'',op1:'查看评论',op2:'再次预定'},
 			canceled:{title:'已取消',tip:'',op1:'删除',op2:'再次预定'}}
 		}
 	},
@@ -182,6 +182,9 @@ export default{
 		// 	orderId:state=>state.orderId,
 		// 	orderTime:state=>state.orderTime,
 		// }),
+		openId(){
+			return this.$store.state.openId;
+		},
 		state(){
 			return this.$route.params.state;
 		},
@@ -202,22 +205,24 @@ export default{
 		op1(){
 			switch(this.state){
 				case 'timeout':
-				case 'commented':
 				case 'canceled':
 				this.del();
 				break;
 				case 'wait':
 				this.cancel();
 				break;
-				case 'comment':
+				case 'success':
 				this.comment();
+				break;
+				case 'commented':
+				this.checkComment();
 				break;
 			}
 		},
 		op2(){
 			switch(this.state){
 				case 'timeout':
-				case 'comment':
+				case 'success':
 				case 'commented':
 				case 'canceled':
 				this.orderAgain();
@@ -250,7 +255,7 @@ export default{
 					alert('@@@@@@@@'+res.body.Msg);
 				}
 			},function(err){
-				console.log(err)
+				console.log('#####:',err)
 			})
 		},
 		jsApiCall(a)
@@ -266,15 +271,15 @@ export default{
                             //微信支付成功，进行支付成功处理
                             alert("微信支付成功...");
                             this.$store.commit('changeOrderState','success')
-                            this.$router.push('/orderState/success')
+                            this.$router.replace('/orderState/success/'+this.orderId)
                         }else if(res.err_msg == "get_brand_wcpay_request：cancel"){
                         	alert("取消支付！");
                         	this.$store.commit('changeOrderState','cancel')
-                        	this.$router.push('/orderState/wait')
+                        	this.$router.replace('/orderState/wait/'+this.orderId)
                         }else{
                         	alert("支付失败！");
                         	this.$store.commit('changeOrderState','fail')
-                        	this.$router.push('/orderState/fail')
+                        	this.$router.replace('/orderState/wait/'+this.orderId)
                         }
                     }.bind(this)
                     );
@@ -285,6 +290,9 @@ export default{
 				hotelId:this.orderInfo.branch,
 				orderId:this.orderId
 			}})
+		},
+		checkComment(){
+			this.$router.push({path:'/comments/'+this.orderInfo.branch})
 		},
 		orderAgain(){
 			this.$router.push({path:"/roomList",query:{

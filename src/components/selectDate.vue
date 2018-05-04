@@ -1,5 +1,5 @@
 <template>
-	<div @click="close" class="backdrop">
+	<div @click.self="close" class="backdrop">
 		<calendar class="calendar" :range="range" 
 		:value="initValue" :begin="begin" :end="end" @select="select"></calendar>
 		<div class="footer">
@@ -49,6 +49,7 @@ export default{
 			var etime=new Date(this.value[1][0],this.value[1][1],this.value[1][2]);
 			this.$store.commit('changeTime',{stime,etime});
 			this.$emit('close');
+
 		},
 		select(begin,end){
 			console.log(begin,end);

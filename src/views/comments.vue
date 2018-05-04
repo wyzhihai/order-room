@@ -1,6 +1,6 @@
 <template>
 	<div class="bg">
-		<header-bar class="header" back="/roomList" title="用户评价"></header-bar>
+		<header-bar class="header" :back="'/roomList?id='+hotelId" title="用户评价"></header-bar>
 		<div class="category">
 			<div @click="filter(1)" :class="{active:category==1}" class="item">全部<small>({{sum}})</small></div>
 			<div @click="filter(2)" :class="{active:category==2}" class="item">晒分<small>({{hasScore}})</small></div>
@@ -18,12 +18,15 @@
 			<div class="item">价格实惠 {{arrCount['价格优惠']}}</div>
 			<div class="item">体验很棒 {{arrCount['体验很棒']}}</div>
 		</div>
-		<comment-info v-for="(item,index) in result" :info="item" :key="item.time"></comment-info>
+		<comment-info v-for="(item,index) in result" :info="item" :key="key(item.time)"></comment-info>
 	</div>
 </template>
 <script>
 import {mapState} from 'vuex'
 export default{
+	// beforeRouteEnter(to,from,next){
+	// 	next(vm=>vm.from=from.path)
+	// },
 	created(){
 		this.$http.get('http://api.shiyushuo.net/WXBOOK/book.php',{
 			params:{
@@ -42,16 +45,22 @@ export default{
 		return{
 			arrCount:[],
 			comments:[],
-			category:1
+			category:1,
 		}
 	},
 	computed:{
-		...mapState({
-			hotelId:state=>state.currentHotel.id
-		}),
+		hotelId(){
+			return this.$route.params.hotelId;
+		},
 		result(){
 			switch(this.category){
 				case 1:
+				this.comments.sort((item1,item2)=>{
+					var stamp1=new Date(item1.time).getTime();
+					var stamp2=new Date(item2.time).getTime()
+					return stamp1-stamp2;
+				});
+				this.$forceUpdate();
 				return this.comments;
 				case 2:
 				return this.comments.filter(item=>{
@@ -67,7 +76,8 @@ export default{
 					var stamp2=new Date(item2.time).getTime()
 					return stamp2-stamp1;
 				});
-				return this.comments
+				this.$forceUpdate();
+				return this.comments;
 			}
 		},
 		sum(){
@@ -93,6 +103,9 @@ export default{
 	methods:{
 		filter(index){
 			this.category=index;
+		},
+		key(time){
+			return ''+time+Math.random().toFixed(6);
 		}
 	}
 }

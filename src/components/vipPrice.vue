@@ -1,7 +1,7 @@
 <template>
-	<div @click.self="close" class="backdrop">
+	<div @click.self="close(0)" class="backdrop">
 		<div class="dialog">
-			<header>会员价 <span @click="close"><img src="/static/img/del.png" alt=""></span></header>
+			<header>会员价 <span @click="close(0)"><img src="/static/img/del.png" alt=""></span></header>
 			<div class="content">
 				<p class="item">
 					<span>大众会员</span>
@@ -16,17 +16,19 @@
 					<span>￥{{allPrice.diamondPrice}}</span>
 				</p>
 			</div>
-			<footer><a @click="close" href="#">办理会员</a></footer>
+			<!-- <footer><span @click="close(1)">{{rank?'升级':'办理'}}会员</span></footer> -->
 		</div>
 	</div>
 </template>
 <script>
 export default{
-	
-	props:['allPrice'],
+
+	props:['allPrice','rank'],
 	methods:{
-		close:function(){
+		close:function(go){
 			this.$emit('close');
+			if(go)
+				this.$router.push({path:'/upgrade'})
 		}
 	}
 }
@@ -42,6 +44,7 @@ export default{
 	display:flex;
 	justify-content:center;
 	align-items:center;
+	z-index:3;
 	.dialog{
 		background:#fff;
 		width:8.0rem;
@@ -72,7 +75,7 @@ export default{
 			text-align:center;
 			padding:0.346667rem 0;
 			margin-top:1.28rem;
-			a{
+			span{
 				display:inline-block;
 				width:4.0rem;
 				height:1.2rem;

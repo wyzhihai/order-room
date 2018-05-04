@@ -8,7 +8,7 @@
 			</div>
 		</div>
 		<div class="list">
-			<hotel-info-simple v-for="(item,index) in hotels" :info="item" :key="index"></hotel-info-simple>
+			<hotel-info-simple v-for="(item,index) in hotels" :info="item" :key="item.branchId"></hotel-info-simple>
 		</div>
 	</div>
 </template>
